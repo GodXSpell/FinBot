@@ -62,7 +62,7 @@
                         <!-- <img id="SwipeCard_image" src="/Images/SwipeCard.svg" alt=""> -->
                         <button id="SwipeCardBtn">
                             <div class="swipe-card-bg"></div>
-                            <p onclick="redirectToPage()" id="swipeText">Submit</p>
+                            <p id="swipeText">Submit</p>
                         </button>
                         <!-- <button id="SwipeBtn" type="submit"><img id="SwipeBtn_image" src="/Images/SwipeBtn.png"
                                 alt=""></button> -->
@@ -90,22 +90,47 @@
     <script>
         document.getElementById('SwipeCardBtn').addEventListener('click', function (event) {
             event.preventDefault();
+            event.stopPropagation();
+            
             // Get user input
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            
+            // Check if fields are empty
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+            
             // Retrieve stored credentials
             const storedUsername = localStorage.getItem('username');
             const storedPassword = localStorage.getItem('password');
-            // Validate
+            
+            // If no stored credentials exist, inform user to sign up first
+            if (!storedUsername || !storedPassword) {
+                alert('No account found. Please sign up first.');
+                window.location.href = 'SignupPage.html';
+                return;
+            }
+            
+            // Validate credentials (case-sensitive comparison)
             if (username === storedUsername && password === storedPassword) {
-                // Redirect to dashboard
-                window.location.href = 'Balance&Budgets.html';
+                // Successful login
+                //console.log('LOGIN SUCCESS');
+                alert('Login successful!');
+                window.location.href = 'chatbotPage.html';
             } else {
-                alert('Invalid Username or Password');
+                //console.log('LOGIN FAILED');
+                alert(`Invalid credentials. Please check:\nUsername: "${username}"\nStored: "${storedUsername}"`);
             }
         });
 
-        document.querySelector(".cancelButton").addEventListener('click', function () { window.location.href = 'index.html'; });
+        document.querySelector(".cancelButton").addEventListener('click', function () { 
+            window.location.href = 'index.html'; 
+        });
+
+        
     </script>
 </body>
 
