@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { BrandContextMenu } from '@/components/ui/BrandContextMenu'
 import { SiteHeaderMark } from '@/components/ui/SiteHeaderMark'
 import { SiteHeaderWrapper } from '@/components/ui/SiteHeaderWrapper'
-import { ToggleTheme } from '@/components/ui/ToggleTheme'
 import { getAllPosts } from '@/features/blog/data/posts'
 import { cn } from '@/lib/utils'
 import { Search } from 'lucide-react'
@@ -54,7 +53,6 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <CommandMenu posts={posts} />
-          <ToggleTheme />
         </div>
       </div>
     </SiteHeaderWrapper>

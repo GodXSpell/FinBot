@@ -1,5 +1,4 @@
-import Footer from '@/components/layout/Footer';
-import { SiteHeader } from '@/components/layout/SiteHeader';
+import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { META_THEME_COLORS } from '@/config/site';
 import type { Metadata, Viewport } from "next";
@@ -34,9 +33,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          <SiteHeader />
-          {children}
-          <Footer />
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
         </ThemeProvider>
       </body>
     </html>

@@ -15,9 +15,13 @@ import {
   Home,
   LogIn,
   Mail,
+  Monitor,
+  Moon,
   Search,
+  Sun,
   UserPlus
 } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import * as React from 'react'
 
 interface Post {
@@ -34,6 +38,7 @@ interface CommandMenuProps {
 export function CommandMenu({ open = false, onOpenChange, posts = [] }: CommandMenuProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
+  const { setTheme } = useTheme()
   
   const handleOpenChange = onOpenChange || setIsOpen
   const isOpenState = onOpenChange ? open : isOpen
@@ -133,6 +138,23 @@ export function CommandMenu({ open = false, onOpenChange, posts = [] }: CommandM
               <CommandSeparator />
             </>
           )}
+          
+          <CommandGroup heading="Theme">
+            <CommandItem onSelect={() => runCommand(() => setTheme('light'))}>
+              <Sun className="mr-2 h-4 w-4" />
+              <span>Light</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme('dark'))}>
+              <Moon className="mr-2 h-4 w-4" />
+              <span>Dark</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setTheme('system'))}>
+              <Monitor className="mr-2 h-4 w-4" />
+              <span>System</span>
+            </CommandItem>
+          </CommandGroup>
+
+          <CommandSeparator />
           
           <CommandGroup heading="Contact">
             <CommandItem onSelect={() => runCommand(() => window.location.href = 'mailto:support@finbot.com')}>
