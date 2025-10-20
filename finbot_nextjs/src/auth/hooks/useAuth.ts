@@ -59,8 +59,8 @@ export function useAuth() {
           isLoading: false
         }))
         
-        // Redirect to dashboard or previous page
-        router.push('/dashboard')
+        // Redirect to chatbot after successful login
+        router.push('/chatbot')
         return { success: true }
       } else {
         setAuthState(prev => ({
@@ -93,16 +93,31 @@ export function useAuth() {
     try {
       const response = await AuthAPI.signup(credentials)
       
-      if (response.success && response.user) {
-        setAuthState(prev => ({
-          ...prev,
-          user: response.user!,
-          isAuthenticated: true,
-          isLoading: false
-        }))
-        
-        // Redirect to dashboard
-        router.push('/dashboard')
+      if (response.success) {
+        if (response.user) {
+          // If user is returned, log them in immediately
+          setAuthState(prev => ({
+            ...prev,
+            user: response.user!,
+            isAuthenticated: true,
+            isLoading: false
+          }))
+          
+          // Redirect to chatbot
+          router.push('/chatbot')
+        } else {
+          // If no user returned, it means signup successful but need to login
+          setAuthState(prev => ({
+            ...prev,
+            isLoading: false,
+            error: null
+          }))
+          
+          // Show success message and redirect to login
+          setTimeout(() => {
+            router.push('/login')
+          }, 2000) // Give user time to read success message
+        }
         return { success: true }
       } else {
         setAuthState(prev => ({

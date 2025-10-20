@@ -16,9 +16,28 @@ export default function Hero() {
           </h1>
 
           {/* Subtitle */}
-          <h4 className="text-lg md:text-xl text-foreground/70 leading-relaxed">
+          <h4 className="text-lg md:text-xl text-foreground/70 leading-relaxed mb-8">
             FinBot is your AI-powered assistant for everyday conversations and seamless FundFlow finance support. Get answers, insights, and financial help—all in one place.
           </h4>
+
+          {/* Demo Credentials */}
+          <div className="bg-muted/50 border border-border rounded-lg p-6 max-w-md mx-auto">
+            <h5 className="text-sm font-semibold text-foreground mb-3">🚀 Try the Demo</h5>
+            <div className="text-sm space-y-2 text-left">
+              <div>
+                <span className="text-muted-foreground">Name:</span> <code className="bg-background px-2 py-1 rounded text-xs">Admin</code>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Email:</span> <code className="bg-background px-2 py-1 rounded text-xs">admin@gmail.com</code>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Password:</span> <code className="bg-background px-2 py-1 rounded text-xs">Admin@123</code>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Use these credentials to test the signup and login flow
+            </p>
+          </div>
         </div>
       </div>
     </section>

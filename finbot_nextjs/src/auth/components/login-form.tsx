@@ -47,10 +47,25 @@ export function LoginForm({
     }
   }
 
+  const handleInputBlur = (field: keyof LoginCredentials, value: string) => {
+    const trimmedValue = value.trim()
+    setFormData(prev => ({ ...prev, [field]: trimmedValue }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    const result = await login(formData)
+    // Trim values before submission
+    const trimmedData = {
+      email: formData.email.trim(),
+      password: formData.password.trim()
+    }
+    
+    console.log('Form submission with data:', trimmedData)
+    
+    const result = await login(trimmedData)
+    
+    console.log('Login result:', result)
     
     if (!result.success && result.errors) {
       setValidationErrors(result.errors)
@@ -107,6 +122,7 @@ export function LoginForm({
                   placeholder="m@example.com"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
+                  onBlur={(e) => handleInputBlur('email', e.target.value)}
                   disabled={isLoading}
                   className={validationErrors.email ? 'border-red-500' : ''}
                 />
@@ -131,6 +147,7 @@ export function LoginForm({
                   type="password" 
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
+                  onBlur={(e) => handleInputBlur('password', e.target.value)}
                   disabled={isLoading}
                   className={validationErrors.password ? 'border-red-500' : ''}
                 />

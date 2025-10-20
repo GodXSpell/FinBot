@@ -11,22 +11,19 @@ interface LayoutWrapperProps {
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
   const pathname = usePathname()
   const isAuthPage = pathname === '/login' || pathname === '/signup'
-  const chatpage = pathname === '/chat'
+  const isChatbotPage = pathname === '/chatbot'
 
+  // Auth pages get no header or footer
   if (isAuthPage) {
     return <>{children}</>
   }
 
-  if (chatpage){
-    return (
-    <>
-      <SiteHeader />
-      {children}
-      
-    </>
-    )
+  // Chatbot page gets no header or footer
+  if (isChatbotPage) {
+    return <>{children}</>
   }
 
+  // Landing page gets both header and footer
   return (
     <>
       <SiteHeader />

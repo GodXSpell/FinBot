@@ -33,6 +33,7 @@ export function SignupForm({
     confirmPassword: ''
   })
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const handleInputChange = (field: keyof SignupCredentials, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -53,7 +54,12 @@ export function SignupForm({
     
     const result = await signup(formData)
     
-    if (!result.success && result.errors) {
+    if (result.success) {
+      // Check if there's a success message (signup successful, redirecting to login)
+      if (!error) {
+        setSuccessMessage('Account created successfully! Redirecting to login...')
+      }
+    } else if (result.errors) {
       setValidationErrors(result.errors)
     }
   }
@@ -73,6 +79,12 @@ export function SignupForm({
               {error && (
                 <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-md">
                   {error.message}
+                </div>
+              )}
+              
+              {successMessage && (
+                <div className="p-3 text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 rounded-md">
+                  {successMessage}
                 </div>
               )}
               

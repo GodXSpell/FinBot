@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/auth'
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,15 +11,20 @@ import {
   CommandSeparator,
 } from '@/components/ui/command'
 import {
+  Bot,
   DollarSign,
   ExternalLink,
+  History,
   Home,
   LogIn,
+  LogOut,
   Mail,
+  MessageCircle,
   Monitor,
   Moon,
   Search,
   Sun,
+  User,
   UserPlus
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -29,16 +35,35 @@ interface Post {
   title: string
 }
 
+interface SavedChat {
+  id: string
+  name: string
+  messages: any[]
+  createdAt: Date
+  lastModified: Date
+}
+
 interface CommandMenuProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   posts?: Post[]
+  savedChats?: SavedChat[]
+  onLoadChat?: (chatName: string) => void
+  onNewChat?: () => void
 }
 
-export function CommandMenu({ open = false, onOpenChange, posts = [] }: CommandMenuProps) {
+export function CommandMenu({ 
+  open = false, 
+  onOpenChange, 
+  posts = [], 
+  savedChats = [], 
+  onLoadChat, 
+  onNewChat 
+}: CommandMenuProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
   const { setTheme } = useTheme()
+  const { user, logout } = useAuth()
   
   const handleOpenChange = onOpenChange || setIsOpen
   const isOpenState = onOpenChange ? open : isOpen
@@ -110,19 +135,102 @@ export function CommandMenu({ open = false, onOpenChange, posts = [] }: CommandM
           <CommandSeparator />
           
           <CommandGroup heading="Account">
-            <CommandItem onSelect={() => runCommand(() => window.location.href = '/login')}>
-              <LogIn className="mr-2 h-4 w-4" />
-              <span>Login</span>
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => window.location.href = '/signup')}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              <span>Get Started</span>
-            </CommandItem>
+            {user ? (
+              <>
+                <CommandItem onSelect={() => runCommand(() => {
+                  if (window.location.pathname === '/chatbot') {
+                    if (onNewChat) {
+                      onNewChat()
+                    }
+                  } else {
+                    window.location.href = '/chatbot'
+                  }
+                })}>
+                  <Bot className="mr-2 h-4 w-4" />
+                  <span>{window.location.pathname === '/chatbot' ? 'New FinBot Chat' : 'FinBot Chat'}</span>
+                </CommandItem>
+                <CommandItem onSelect={() => runCommand(() => {
+                  // TODO: Implement profile page
+                  console.log('Profile clicked')
+                })}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </CommandItem>
+                <CommandItem onSelect={() => runCommand(() => logout())}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </CommandItem>
+              </>
+            ) : (
+              <>
+                <CommandItem onSelect={() => runCommand(() => window.location.href = '/login')}>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  <span>Login</span>
+                </CommandItem>
+                <CommandItem onSelect={() => runCommand(() => window.location.href = '/signup')}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  <span>Get Started</span>
+                </CommandItem>
+              </>
+            )}
           </CommandGroup>
 
           <CommandSeparator />
           
-          {posts && posts.length > 0 && (
+          {user && (
+            <>
+              <CommandGroup heading="Chat History">
+                {onNewChat && (
+                  <CommandItem onSelect={() => runCommand(() => onNewChat())}>
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <span>New Chat</span>
+                  </CommandItem>
+                )}
+                {savedChats.length > 0 ? (
+                  <>
+                    {savedChats
+                      .sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime())
+                      .slice(0, 5) // Show only the 5 most recent chats
+                      .map((chat) => (
+                        <CommandItem 
+                          key={chat.id} 
+                          onSelect={() => runCommand(() => {
+                            if (onLoadChat) {
+                              onLoadChat(chat.name)
+                            }
+                          })}
+                        >
+                          <History className="mr-2 h-4 w-4" />
+                          <div className="flex flex-col items-start">
+                            <span className="truncate max-w-48">{chat.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {chat.messages.length} messages • {chat.lastModified.toLocaleDateString()}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    {savedChats.length > 5 && (
+                      <CommandItem onSelect={() => runCommand(() => {
+                        // This will trigger the /list command behavior
+                        console.log('Show all saved chats - use /list command')
+                      })}>
+                        <History className="mr-2 h-4 w-4" />
+                        <span>View All ({savedChats.length} total)</span>
+                      </CommandItem>
+                    )}
+                  </>
+                ) : (
+                  <CommandItem onSelect={() => runCommand(() => {
+                    console.log('No saved chats available')
+                  })}>
+                    <History className="mr-2 h-4 w-4" />
+                    <span className="text-muted-foreground">No saved chats yet</span>
+                  </CommandItem>
+                )}
+              </CommandGroup>
+              <CommandSeparator />
+            </>
+          )}          {posts && posts.length > 0 && (
             <>
               <CommandGroup heading="Blog Posts">
                 {posts.map((post) => (

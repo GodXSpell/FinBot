@@ -2,6 +2,23 @@ import { AuthResponse, LoginCredentials, SignupCredentials, User } from '../type
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
 
+// Temporary hardcoded admin credentials for testing
+const TEMP_ADMIN_CREDENTIALS = {
+  name: 'Admin',
+  email: 'admin@gmail.com',
+  password: 'Admin@123'
+}
+
+// Temporary user data that would normally come from database
+const TEMP_USER_DATA = {
+  id: 'admin_001',
+  email: 'admin@gmail.com',
+  name: 'Admin',
+  avatar: undefined,
+  createdAt: new Date('2025-01-01'),
+  updatedAt: new Date()
+}
+
 export class AuthAPI {
   private static async makeRequest<T>(
     endpoint: string, 
@@ -27,17 +44,43 @@ export class AuthAPI {
 
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await this.makeRequest<AuthResponse>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(credentials),
+      // Debug logging
+      console.log('Login attempt:', {
+        inputEmail: credentials.email,
+        inputPassword: credentials.password,
+        expectedEmail: TEMP_ADMIN_CREDENTIALS.email,
+        expectedPassword: TEMP_ADMIN_CREDENTIALS.password,
+        emailMatch: credentials.email === TEMP_ADMIN_CREDENTIALS.email,
+        passwordMatch: credentials.password === TEMP_ADMIN_CREDENTIALS.password
       })
 
-      // Store token in localStorage if login successful
-      if (response.success && response.token) {
-        localStorage.setItem('auth_token', response.token)
-      }
+      // Temporary authentication - check against hardcoded credentials
+      if (
+        credentials.email === TEMP_ADMIN_CREDENTIALS.email &&
+        credentials.password === TEMP_ADMIN_CREDENTIALS.password
+      ) {
+        // Generate a fake JWT token for temporary use
+        const fakeToken = btoa(JSON.stringify({
+          userId: TEMP_USER_DATA.id,
+          email: TEMP_USER_DATA.email,
+          exp: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+        }))
 
-      return response
+        // Store token in localStorage
+        localStorage.setItem('auth_token', fakeToken)
+
+        return {
+          success: true,
+          user: TEMP_USER_DATA,
+          token: fakeToken,
+          message: 'Login successful'
+        }
+      } else {
+        return {
+          success: false,
+          message: 'Invalid email or password. Use admin@gmail.com / Admin@123 for testing.'
+        }
+      }
     } catch (error) {
       return {
         success: false,
@@ -48,21 +91,23 @@ export class AuthAPI {
 
   static async signup(credentials: SignupCredentials): Promise<AuthResponse> {
     try {
-      const response = await this.makeRequest<AuthResponse>('/auth/signup', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: credentials.name,
-          email: credentials.email,
-          password: credentials.password
-        }),
-      })
-
-      // Store token in localStorage if signup successful
-      if (response.success && response.token) {
-        localStorage.setItem('auth_token', response.token)
+      // Temporary authentication - check if trying to sign up with admin credentials
+      if (
+        credentials.name.toLowerCase() === TEMP_ADMIN_CREDENTIALS.name.toLowerCase() &&
+        credentials.email === TEMP_ADMIN_CREDENTIALS.email &&
+        credentials.password === TEMP_ADMIN_CREDENTIALS.password
+      ) {
+        // For testing, we'll simulate successful signup and redirect to login
+        return {
+          success: true,
+          message: 'Account created successfully! Please log in with your credentials.'
+        }
+      } else {
+        return {
+          success: false,
+          message: 'For testing, please use: Name: Admin, Email: admin@gmail.com, Password: Admin@123'
+        }
       }
-
-      return response
     } catch (error) {
       return {
         success: false,
@@ -76,13 +121,26 @@ export class AuthAPI {
       const token = localStorage.getItem('auth_token')
       if (!token) return null
 
-      const response = await this.makeRequest<{ user: User }>('/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      // Temporary authentication - decode fake token
+      try {
+        const decoded = JSON.parse(atob(token))
+        
+        // Check if token is expired
+        if (decoded.exp && Date.now() > decoded.exp) {
+          localStorage.removeItem('auth_token')
+          return null
         }
-      })
 
-      return response.user
+        // Return user data if token is valid
+        if (decoded.userId === TEMP_USER_DATA.id) {
+          return TEMP_USER_DATA
+        }
+      } catch (decodeError) {
+        localStorage.removeItem('auth_token')
+        return null
+      }
+
+      return null
     } catch (error) {
       // Remove invalid token
       localStorage.removeItem('auth_token')
