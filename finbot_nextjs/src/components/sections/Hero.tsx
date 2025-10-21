@@ -1,5 +1,10 @@
 'use client'
-
+// idea for hero section is to have 1/4 width of the section to be assigned to its logo and rest 3/4 to the text content
+// and the text to be left aligned and the logo will be to the right of the section 
+// and logo will be jin sakais clan logo from ghost of tsushima
+// this is to be implemented later 
+// and to also change the whole of the landing page design as of now its fine but still lacking the touch of modern saas landing page
+// 
 export default function Hero() {
   return (
     <section className="relative">
@@ -20,24 +25,6 @@ export default function Hero() {
             FinBot is your AI-powered assistant for everyday conversations and seamless FundFlow finance support. Get answers, insights, and financial help—all in one place.
           </h4>
 
-          {/* Demo Credentials */}
-          <div className="bg-muted/50 border border-border rounded-lg p-6 max-w-md mx-auto">
-            <h5 className="text-sm font-semibold text-foreground mb-3">🚀 Try the Demo</h5>
-            <div className="text-sm space-y-2 text-left">
-              <div>
-                <span className="text-muted-foreground">Name:</span> <code className="bg-background px-2 py-1 rounded text-xs">Admin</code>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Email:</span> <code className="bg-background px-2 py-1 rounded text-xs">admin@gmail.com</code>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Password:</span> <code className="bg-background px-2 py-1 rounded text-xs">Admin@123</code>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              Use these credentials to test the signup and login flow
-            </p>
-          </div>
         </div>
       </div>
     </section>

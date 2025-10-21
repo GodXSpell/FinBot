@@ -1,5 +1,5 @@
 "use client"
-
+// to add enter key icon display on command menu bottom right corner along with the escape key icon as well as logo of finbot on left bottom side
 import { Command as CommandPrimitive } from "cmdk"
 import * as React from "react"
 

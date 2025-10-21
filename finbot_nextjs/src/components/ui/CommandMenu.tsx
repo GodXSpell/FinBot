@@ -1,5 +1,5 @@
 'use client'
-
+// to add enter key icon display on command menu bottom right corner along with the escape key icon as well as logo of finbot on left bottom side 
 import { useAuth } from '@/auth'
 import {
   CommandDialog,
