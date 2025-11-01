@@ -2,30 +2,29 @@
 // to add enter key icon display on command menu bottom right corner along with the escape key icon as well as logo of finbot on left bottom side 
 import { useAuth } from '@/auth'
 import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
 } from '@/components/ui/command'
 import {
-  Bot,
-  DollarSign,
-  ExternalLink,
-  History,
-  Home,
-  LogIn,
-  LogOut,
-  Mail,
-  MessageCircle,
-  Monitor,
-  Moon,
-  Search,
-  Sun,
-  User,
-  UserPlus
+    Bot,
+    ExternalLink,
+    History,
+    Home,
+    LogIn,
+    LogOut,
+    Mail,
+    MessageCircle,
+    Monitor,
+    Moon,
+    Search,
+    Sun,
+    User,
+    UserPlus
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
@@ -123,13 +122,13 @@ export function CommandMenu({
               <Home className="mr-2 h-4 w-4" />
               <span>Home</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => {
+            {/* <CommandItem onSelect={() => runCommand(() => {
               const element = document.getElementById('pricing')
               element?.scrollIntoView({ behavior: 'smooth' })
             })}>
               <DollarSign className="mr-2 h-4 w-4" />
               <span>Pricing</span>
-            </CommandItem>
+            </CommandItem> */}
           </CommandGroup>
           
           <CommandSeparator />
@@ -150,11 +149,10 @@ export function CommandMenu({
                   <span>{window.location.pathname === '/chatbot' ? 'New FinBot Chat' : 'FinBot Chat'}</span>
                 </CommandItem>
                 <CommandItem onSelect={() => runCommand(() => {
-                  // TODO: Implement profile page
-                  console.log('Profile clicked')
+                  window.location.href = '/settings'
                 })}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span>Settings</span>
                 </CommandItem>
                 <CommandItem onSelect={() => runCommand(() => logout())}>
                   <LogOut className="mr-2 h-4 w-4" />

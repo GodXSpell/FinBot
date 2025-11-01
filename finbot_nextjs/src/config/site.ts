@@ -11,6 +11,7 @@ export const META_THEME_COLORS = {
   dark: "#09090b",
 };
 
-export const MAIN_NAV = [
+export const MAIN_NAV: Array<{ title: string; href: string }> = [
   // Empty array - no main navigation items in navbar
+  // Navigation is handled through the command menu (⌘K)
 ];

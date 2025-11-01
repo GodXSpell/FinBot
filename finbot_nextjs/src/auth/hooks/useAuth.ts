@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { AuthAPI } from '../lib/api'
 import { hasValidationErrors, validateLoginForm, validateSignupForm } from '../lib/validation'
-import { AuthState, LoginCredentials, SignupCredentials, ValidationErrors } from '../types'
+import { AuthState, LoginCredentials, SignupCredentials, UpdateAllUserRequest, ValidationErrors } from '../types'
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
@@ -94,30 +94,17 @@ export function useAuth() {
       const response = await AuthAPI.signup(credentials)
       
       if (response.success) {
-        if (response.user) {
-          // If user is returned, log them in immediately
-          setAuthState(prev => ({
-            ...prev,
-            user: response.user!,
-            isAuthenticated: true,
-            isLoading: false
-          }))
-          
-          // Redirect to chatbot
-          router.push('/chatbot')
-        } else {
-          // If no user returned, it means signup successful but need to login
-          setAuthState(prev => ({
-            ...prev,
-            isLoading: false,
-            error: null
-          }))
-          
-          // Show success message and redirect to login
-          setTimeout(() => {
-            router.push('/login')
-          }, 2000) // Give user time to read success message
-        }
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: null
+        }))
+        
+        // Signup successful, redirect to login page
+        setTimeout(() => {
+          router.push('/login')
+        }, 2000) // Give user time to read success message
+        
         return { success: true }
       } else {
         setAuthState(prev => ({
@@ -135,6 +122,158 @@ export function useAuth() {
         error: { message: errorMessage }
       }))
       return { success: false }
+    }
+  }, [router])
+
+  const updatePassword = useCallback(async (newPassword: string): Promise<{ success: boolean; message?: string }> => {
+    const userId = AuthAPI.getCurrentUserId()
+    if (!userId) {
+      return { success: false, message: 'User not authenticated' }
+    }
+
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }))
+    
+    try {
+      const response = await AuthAPI.updatePassword(userId, newPassword)
+      
+      if (response.success && response.user) {
+        setAuthState(prev => ({
+          ...prev,
+          user: response.user!,
+          isLoading: false
+        }))
+        return { success: true, message: response.message }
+      } else {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: { message: response.message || 'Password update failed' }
+        }))
+        return { success: false, message: response.message }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Password update failed'
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: { message: errorMessage }
+      }))
+      return { success: false, message: errorMessage }
+    }
+  }, [])
+
+  const updateEmail = useCallback(async (newEmail: string): Promise<{ success: boolean; message?: string }> => {
+    const userId = AuthAPI.getCurrentUserId()
+    if (!userId) {
+      return { success: false, message: 'User not authenticated' }
+    }
+
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }))
+    
+    try {
+      const response = await AuthAPI.updateEmail(userId, newEmail)
+      
+      if (response.success && response.user) {
+        setAuthState(prev => ({
+          ...prev,
+          user: response.user!,
+          isLoading: false
+        }))
+        return { success: true, message: response.message }
+      } else {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: { message: response.message || 'Email update failed' }
+        }))
+        return { success: false, message: response.message }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Email update failed'
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: { message: errorMessage }
+      }))
+      return { success: false, message: errorMessage }
+    }
+  }, [])
+
+  const updateProfile = useCallback(async (updates: UpdateAllUserRequest): Promise<{ success: boolean; message?: string }> => {
+    const userId = AuthAPI.getCurrentUserId()
+    if (!userId) {
+      return { success: false, message: 'User not authenticated' }
+    }
+
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }))
+    
+    try {
+      const response = await AuthAPI.updateAllUserDetails(userId, updates)
+      
+      if (response.success && response.user) {
+        setAuthState(prev => ({
+          ...prev,
+          user: response.user!,
+          isLoading: false
+        }))
+        return { success: true, message: response.message }
+      } else {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: { message: response.message || 'Profile update failed' }
+        }))
+        return { success: false, message: response.message }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Profile update failed'
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: { message: errorMessage }
+      }))
+      return { success: false, message: errorMessage }
+    }
+  }, [])
+
+  const deleteAccount = useCallback(async (): Promise<{ success: boolean; message?: string }> => {
+    const userId = AuthAPI.getCurrentUserId()
+    if (!userId) {
+      return { success: false, message: 'User not authenticated' }
+    }
+
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }))
+    
+    try {
+      const response = await AuthAPI.deleteUser(userId)
+      
+      if (response.success) {
+        setAuthState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null
+        })
+        
+        // Redirect to home page
+        router.push('/')
+        return { success: true, message: response.message }
+      } else {
+        setAuthState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: { message: response.message || 'Account deletion failed' }
+        }))
+        return { success: false, message: response.message }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Account deletion failed'
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: { message: errorMessage }
+      }))
+      return { success: false, message: errorMessage }
     }
   }, [router])
 
@@ -172,6 +311,10 @@ export function useAuth() {
     login,
     signup,
     logout,
+    updatePassword,
+    updateEmail,
+    updateProfile,
+    deleteAccount,
     clearError
   }
 }
